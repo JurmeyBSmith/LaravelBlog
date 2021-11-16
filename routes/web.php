@@ -16,6 +16,12 @@ use Spatie\YamlFrontMatter\YamlFrontMatter;
 |
 */
 
+Route::get('/test/{test}', function ($test){
+    return view('test', [
+        test => $test
+    ]);
+});
+
 Route::get('/', function () {
     $files = File::files(resource_path("posts"));
     $posts =[];
