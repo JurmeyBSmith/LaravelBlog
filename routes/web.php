@@ -3,7 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\File;
 use App\Models\Post;
-use Spatie\YamlFrontMatter\YamlFrontMatter;
+
 
 /*
 |--------------------------------------------------------------------------
@@ -17,29 +17,26 @@ use Spatie\YamlFrontMatter\YamlFrontMatter;
 */
 
 Route::get('/', function () {
-    $files = File::files(resource_path("posts"));
-    $posts =[];
-
-    foreach ($files as $file) {
-        $document = YamlFrontMatter::parseFile($file);;
-
-        $posts = new Post(
-          $document->title,
-          $document->excerpt,
-          $document->date,
-          $document->body()
-        );
-
-    }
-    ddd($posts);
-//    return view('posts', [
-//        'posts' => Post::all()
-//    ]);
+    return view('posts', [
+        'posts' => Post::with('category')->get()
+    ]);
 });
 
-Route::get('/posts/{post}', function ($slug) {
+Route::get('/posts/{post:slug}', function (Post $post) {
     return view('post', [
-       'post' => Post::find($slug)
+       'post' => $post
     ]);
 
-})->where('post', '[A-z_\-]+');
+});
+
+Route::get('categories/{category:slug}', function (App\Models\Category $category){
+   return view('posts', [
+       'posts' => $category->posts
+   ]);
+});
+
+Route::get('users/{user:id}', function (App\Models\User $user){
+    return view('posts', [
+        'posts' => $user->posts
+    ]);
+});
